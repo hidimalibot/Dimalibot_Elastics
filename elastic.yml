@@ -1,0 +1,39 @@
+---
+
+- hosts: all
+  become: true
+  pre_tasks:
+
+  - name: Update repository index (Ubuntu)
+    tags: always
+    apt:
+      upgrade: dist
+      update_cache: yes
+    changed_when: false
+    when: ansible_distribution == "Ubuntu"
+
+  - name: Update repository index (CentOS)
+    tags: always
+    dnf:
+      update_cache: yes
+    changed_when: false
+    when: ansible_distribution == "CentOS"
+
+
+
+  - name: Install httpd  on CentOS
+    tags: centos, apache, httpd
+    service:
+        name: httpd
+        state: started
+    when: ansible_distribution == "CentOS"
+
+- hosts: centos
+  become: true
+  roles:
+    - centos
+
+- hosts: ubuntu
+  become: true
+  roles:
+    - ubuntu
